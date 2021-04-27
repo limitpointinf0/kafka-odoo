@@ -1,0 +1,3 @@
+curl -X DELETE http://localhost:8083/connectors/<connector-name>
+
+/kafka/bin/kafka-topics.sh --list --zookeeper 2181

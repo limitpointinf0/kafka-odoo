@@ -1,0 +1,92 @@
+version: '2'
+services:
+  zookeeper:
+    image: debezium/zookeeper:0.10
+    container_name: zookeeper
+    ports:
+      - "2888:2888"
+      - "3888:3888"
+    networks:
+      - kafka-net
+  kafka:
+    image: debezium/kafka:0.10
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - kafka-net
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka"
+    networks:
+      - kafka-net
+  connect:
+    image: debezium/connect:0.10
+    container_name: connect
+    ports:
+      - "8083:8083"
+    environment:
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_statuses
+      - BOOTSTRAP_SERVERS=kafka:9092
+    networks:
+      - kafka-net
+  watcher:
+    image: debezium/kafka:0.10
+    container_name: watcher
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper
+      - KAFKA_BROKER=kafka:9092
+    networks:
+      - kafka-net
+    command: watch-topic -a -k odoo.public.pos_order
+  app:
+    image: odoo:12.0
+    container_name: app
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+      - "8071:8071"
+    volumes:
+      - odoo-web-volume:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    networks:
+      - kafka-net
+    stdin_open: true
+    tty: true
+  db:
+    image: postgres:10.0
+    container_name: db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./db:/var/lib/postgresql/data/pgdata
+    networks:
+      - kafka-net
+
+volumes:
+  odoo-web-volume:
+
+networks:
+  kafka-net:

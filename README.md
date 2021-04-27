@@ -18,13 +18,20 @@ docker-compose up -d connect
 docker-compose up -d db
 docker-compose up -d app
 ```
-- Connect to the postgres container and set the WAL level to logical
-```sql
-ALTER SYSTEM SET wal_level = 'logical';
-```
-- Restart the postgres container
+- Go to localhost:8069 and create the database: kafka (with demo data)
 
-- Install the POS module in Odoo
+- Install the POS module in Odoo 
+
+- Create an order
+
+- Connect to the postgres container and set the WAL level to logical and restart the container
+```bash
+docker exec -it db psql -U odoo -W kafka -c "ALTER SYSTEM SET wal_level = 'logical';"
+docker-compose restart db
+docker exec -it db psql -U odoo -W kafka -c "SHOW wal_level;"
+docker exec -it db psql -U odoo -W kafka -c "CREATE PUBLICATION odoo_publication FOR TABLE pos_order;"
+docker exec -it db psql -U odoo -W kafka -c "SELECT * FROM pg_catalog.pg_publication pub LEFT JOIN  pg_catalog.pg_publication_tables tab ON pub.pubname = tab.pubname;"
+```
 
 #creating the connector in Kafka for Postgres
 ```bash

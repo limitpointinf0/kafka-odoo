@@ -6,8 +6,8 @@ After streaming those changes to Kafka through Debezium, we can process them wit
 
 ![Arch Drawing](/images/arch.png)
 
-## Installation
 
+## Installation
 You must install docker and docker-compose before you begin.
 You may use the following script to install: https://gist.githubusercontent.com/limitpointinf0/6a9490ff4fef82a0b385d8a07c15a5c7/raw/5caf17d077fe5e17ffa2eba25fc5c0486e0b657d/install_docker.sh 
 
@@ -34,7 +34,8 @@ docker compose up watcher
 #step 6: create a new pos order and watch change in watcher
 ```
 
-## Local Demo
+
+## Full Demo
 - Run all of the following to set up the full environment:
 ```bash
 #set up kafka
@@ -75,6 +76,8 @@ docker compose up watcher
 
 - Check the output in the watcher container
 
+- If you see row-level changes you may now run the consumers
+
 
 ## Extra
 ```bash
@@ -96,9 +99,12 @@ insert into customers(first_name, last_name, email) values ('FIRST NAME', 'LAST 
 update customers set email='NEWEMAIL@acme.com' where id=1005;
 ```
 
+
 ## Cleanup
 ```bash
 ./clean.sh
 ```
+
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

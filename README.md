@@ -1,5 +1,7 @@
 # Getting Started With Kafka - Odoo CDC Implementation using Docker Compose
-Example for integrating a legacy app into Kafka.
+Example for integrating a legacy app into an Event-Driven Architecture.
+
+![Arch Drawing](/images/arch.png)
 
 ## Installation
 

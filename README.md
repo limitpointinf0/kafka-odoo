@@ -1,6 +1,9 @@
 # Getting Started With Kafka - Odoo CDC Implementation using Docker Compose
 Example for integrating a legacy app into an Event-Driven Architecture.
 
+Our mission is to capture row-level events on the Postgres database layer of an ERP framework, in our case, Odoo. 
+After streaming those changes to Kafka through Debezium, we can process them with consumer applications for alerting to LINE Notify and data-warehousing with BigQuery.
+
 ![Arch Drawing](/images/arch.png)
 
 ## Installation

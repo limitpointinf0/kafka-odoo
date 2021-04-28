@@ -21,12 +21,12 @@ chmod +x pg_config.sh
 ./pg_config.sh
 
 #step 4: create connector
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{ "name": "odoo-connector", "config": { "connector.class": "io.debezium.connector.postgresql.PostgresConnector", "tasks.max": "1", "database.hostname": "db", "database.port": "5432", "database.user": "odoo", "database.password": "odoo", "database.server.id": "184054", "database.server.name": "odoo", "database.dbname": "kafka", "database.whitelist": "kafka", "table.whitelist": "public.res_users,public.res_partner", "database.history.kafka.bootstrap.servers": "kafka:9092", "database.history.kafka.topic": "schema-changes.odoo", "decimal.handling.mode": "double", "plugin.name":"pgoutput", "publication.name":"odoo_publication"}}'
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{ "name": "odoo-connector", "config": { "connector.class": "io.debezium.connector.postgresql.PostgresConnector", "tasks.max": "1", "database.hostname": "db", "database.port": "5432", "database.user": "odoo", "database.password": "odoo", "database.server.id": "184054", "database.server.name": "odoo", "database.dbname": "kafka", "database.whitelist": "kafka", "table.whitelist": "public.pos_order,public.pos_order_line", "database.history.kafka.bootstrap.servers": "kafka:9092", "database.history.kafka.topic": "schema-changes.odoo", "decimal.handling.mode": "double", "plugin.name":"pgoutput"}}'
 
 #step 5: watch users table
 docker compose up watcher
 
-#step 6: create a new user and watch change in watcher
+#step 6: create a new pos order and watch change in watcher
 ```
 
 ## Local Demo

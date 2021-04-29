@@ -28,7 +28,7 @@ chmod +x pg_config.sh
 #step 4: create connector
 curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{ "name": "odoo-connector", "config": { "connector.class": "io.debezium.connector.postgresql.PostgresConnector", "tasks.max": "1", "database.hostname": "db", "database.port": "5432", "database.user": "odoo", "database.password": "odoo", "database.server.id": "184054", "database.server.name": "odoo", "database.dbname": "kafka", "database.whitelist": "kafka", "table.whitelist": "public.pos_order,public.pos_order_line", "database.history.kafka.bootstrap.servers": "kafka:9092", "database.history.kafka.topic": "schema-changes.odoo", "decimal.handling.mode": "double", "plugin.name":"pgoutput"}}'
 
-#step 5: watch users table
+#step 5: watch pos_order_line table
 docker compose up watcher
 
 #step 6: create a new pos order and watch change in watcher
@@ -49,7 +49,7 @@ docker-compose up -d app
 ```
 - Go to localhost:8069 and create the database: kafka (with demo data)
 
-- Connect to the postgres container and set the WAL level to logical and restart the container
+- Connect to the postgres container and set the WAL level to logical and restart the container. Create publications for Debezium
 ```bash
 # dont do this!
 docker exec -it db psql -U odoo -W kafka -c "ALTER USER odoo WITH SUPERUSER;"
@@ -65,7 +65,7 @@ docker exec -it db psql -U odoo -W kafka -c "CREATE PUBLICATION odoo_publication
 docker exec -it db psql -U odoo -W kafka -c "SELECT * FROM pg_catalog.pg_publication pub LEFT JOIN  pg_catalog.pg_publication_tables tab ON pub.pubname = tab.pubname;"
 ```
 
-#creating the connector in Kafka for Postgres
+- create the connector in Kafka for Postgres and watch the topic
 ```bash
 curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{ "name": "odoo-connector", "config": { "connector.class": "io.debezium.connector.postgresql.PostgresConnector", "tasks.max": "1", "database.hostname": "db", "database.port": "5432", "database.user": "odoo", "database.password": "odoo", "database.server.id": "184054", "database.server.name": "odoo", "database.dbname": "kafka", "database.whitelist": "kafka", "table.whitelist": "public.pos_order,public.pos_order_line", "database.history.kafka.bootstrap.servers": "kafka:9092", "database.history.kafka.topic": "schema-changes.odoo", "decimal.handling.mode": "double", "plugin.name":"pgoutput"}}'
 

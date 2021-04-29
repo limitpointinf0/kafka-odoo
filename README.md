@@ -97,6 +97,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 ```sql
 insert into customers(first_name, last_name, email) values ('FIRST NAME', 'LAST NAME', 'YOUREMAIL@EMAIL.COM');
 update customers set email='NEWEMAIL@acme.com' where id=1005;
+delete from customers where id=1005;
 ```
 
 

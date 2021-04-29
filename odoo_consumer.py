@@ -1,4 +1,5 @@
 from kafka import KafkaConsumer
+from google.cloud import bigquery
 import sys
 import json
 import datetime
@@ -27,13 +28,22 @@ consumer = KafkaConsumer (
     bootstrap_servers = ['localhost:9092'],
     value_deserializer=lambda m: json.loads(m.decode('utf-8'))
 )
+client = bigquery.Client.from_service_account_json('./organic-service-304712-fc78a943d386.json')
+dataset_ref = client.dataset('odoo')
+table_ref = dataset_ref.table('pos_order_line')
+table = client.get_table(table_ref) 
 
 # Read data from kafka
 for message in consumer:
     print('Message Offset:', message.offset)
     try:
         after = message[6]['payload']['after']
-        print(after)
+        print([after])
+        errors = client.insert_rows_json(table, [after])
+        if errors == []:
+            print("New rows have been added.")
+        else:
+            print("Encountered errors while inserting rows: {}".format(errors))
         # dt = datetime.datetime.now().strftime("%d_%m_%Y__%H_%M_%S")
         # filename = f'data/{table_name}_{dt}.json'
         # with open(filename, 'w') as f:
